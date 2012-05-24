@@ -1,0 +1,17 @@
+{
+    "name":         "gamebase-gameserver",
+    "version":      "0.0.1",
+    "author":       "Nathan Oehlman <nathan.oehlman@sidelab.com>",
+    "main"          "lib/gameserver.js",
+    "dependencies": {
+        "async": "*",
+        "underscore": "*",
+        "ws": "*",
+        "bison": "*"
+    },
+    
+    "devDependencies": {
+        "mocha": "*",
+        "chai": "*"
+    }
+}
