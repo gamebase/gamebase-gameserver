@@ -9,15 +9,15 @@ var _ = require('underscore'),
     LobbyMessage = messages.LobbyMessage,
     GameMessage = messages.GameMessage,
     messageHandlers = {
-        '0': 'LobbyMessage',
-        '1': 'GameMessage'
+        '0': 'onLobbyMessage',
+        '1': 'onGameMessage'
     };
 
 
 /**
   Create a GameServer
  **/
-function GameServer(config) {
+function GameServer(config, callback) {
     
     events.EventEmitter.call(this);
     
@@ -32,6 +32,10 @@ function GameServer(config) {
 
         myself.server.on('connection', _.bind(myself.onConnect, myself));    
         console.log('Server listening on port ' + (config.port || 6456));
+        
+        if (callback) {
+            callback();
+        }
     });
     
 };
@@ -76,8 +80,8 @@ GameServer.prototype.onConnect = function(ws) {
  **/
 GameServer.prototype.onMessage = function(client, message) {    
     
-    for (mType in messageHandlers) {
-        if (message.startsWith(mtype) && this[messageHandlers[mType]]) {
+    for (var mType in messageHandlers) {
+        if (message.indexOf(mType) === 0 && this[messageHandlers[mType]]) {
             this[messageHandlers[mType]](client, message);
             return;
         }
@@ -147,7 +151,7 @@ GameServer.prototype.onListGames = function(client, message) {
         return {name: key, currentPlayers: value.currentPlayerCount(), maxPlayers: value.maxPlayers};
     });
     
-    this._sendToClient(client, GameMessage.format(message.operation, 1, {games: gameList}));
+    this._sendToClient(client, LobbyMessage.format(message.operation, 1, {games: gameList}));
 }
 
 /**
