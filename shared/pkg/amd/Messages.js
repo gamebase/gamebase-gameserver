@@ -1,5 +1,6 @@
 define('Messages', [], function() {
   GameMessage = {
+      messageId: 1,
       
       types: {
           11: 'JoinGame',
@@ -15,7 +16,11 @@ define('Messages', [], function() {
         Formats a message into the generic transfer format
        **/
       format: function(gameId, op, state, data) {
-          return '1|' + gameId + '|' + op + (state ? '|' + state + (data ? '|' + JSON.stringify(data) : '') : '');
+          var extra = '';
+          if (data) {
+              extra = '|' + JSON.stringify(data);
+          }
+          return GameMessage.messageId + '|' + gameId + '|' + op + (state ? '|' + state + extra : '');
       },
       
       /**
@@ -37,6 +42,8 @@ define('Messages', [], function() {
   };
   LobbyMessage = {
       
+      messageId: 0,
+      
       types: {
           0: 'Unknown',
           1: 'ListGames',
@@ -47,7 +54,8 @@ define('Messages', [], function() {
         Formats a message into the generic transfer format
        **/
       format: function(op, state, data) {
-          return '0|' + op + (state ? '|' + state + (data ? '|' + JSON.stringify(data) : '') : '');
+          var message = LobbyMessage.messageId + '|' + op + (state ? '|' + state + (data ? '|' + JSON.stringify(data) : '') : '');
+          return message;
       },
       
       /**

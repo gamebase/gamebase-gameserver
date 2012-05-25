@@ -1,5 +1,4 @@
 GameMessage = {
-    
     messageId: 1,
     
     types: {
@@ -16,7 +15,11 @@ GameMessage = {
       Formats a message into the generic transfer format
      **/
     format: function(gameId, op, state, data) {
-        return GameMessage.messageId + '|' + gameId + '|' + op + (state ? '|' + state + (data ? '|' + JSON.stringify(data) : '') : '');
+        var extra = '';
+        if (data) {
+            extra = '|' + JSON.stringify(data);
+        }
+        return GameMessage.messageId + '|' + gameId + '|' + op + (state ? '|' + state + extra : '');
     },
     
     /**

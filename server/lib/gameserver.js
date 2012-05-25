@@ -86,7 +86,8 @@ GameServer.prototype.onMessage = function(client, message) {
             return;
         }
     }
-
+    
+    this.emit('unhandledMessage', client, message);
 }
 
 /**
@@ -102,7 +103,7 @@ GameServer.prototype.onLobbyMessage = function(client, message) {
     if (this[handler]) {
         this[handler](client, msg);
     } else {
-        console.log('Unknown operation - ' + msg.operationName);
+        this.emit('lobbyMessage', client, message);
     }
 }
 

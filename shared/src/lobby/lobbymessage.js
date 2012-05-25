@@ -12,7 +12,8 @@ LobbyMessage = {
       Formats a message into the generic transfer format
      **/
     format: function(op, state, data) {
-        return LobbyMessage.messageId + '|' + op + (state ? '|' + state + (data ? '|' + JSON.stringify(data) : '') : '');
+        var message = LobbyMessage.messageId + '|' + op + (state ? '|' + state + (data ? '|' + JSON.stringify(data) : '') : '');
+        return message;
     },
     
     /**
