@@ -13,9 +13,9 @@ MessageParser = {
 
         if (elements.length > 0) {
             messageType = parseInt(elements[0]);
-            for (var message in Messages) {
-                if (Messages[message].messageId == messageType) {
-                    return Messages[message].parse(message);
+            for (var messageCls in Messages) {
+                if (Messages[messageCls].messageId == messageType) {
+                    return Messages[messageCls].parse(message);
                 }
             }
        }
