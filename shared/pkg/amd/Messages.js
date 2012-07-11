@@ -47,7 +47,8 @@ define('Messages', [], function() {
       types: {
           0: 'Unknown',
           1: 'ListGames',
-          10: 'NewGame'
+          10: 'NewGame',
+          11: 'RemoveGame'
       },
       
       /**
@@ -81,6 +82,23 @@ define('Messages', [], function() {
       GameMessage: GameMessage,
       LobbyMessage: LobbyMessage
   };
+  
+  MessageParser = {
+      parse: function(message) {
+          var elements = message.split("|"),
+              messageType;
+  
+          if (elements.length > 0) {
+              messageType = parseInt(elements[0]);
+              for (var message in Messages) {
+                  if (Messages[message].messageId == messageType) {
+                      return Messages[message].parse(message);
+                  }
+              }
+         }
+         return null;
+      }
+  }
 
   return Messages;
 });
