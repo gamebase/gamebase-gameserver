@@ -33,6 +33,7 @@ define('Messages', [], function() {
           if (!elements || elements.length < 3) return null;
           elements.shift();
   
+          result.type = "game";
           result.operation = elements[0];
           result.operationName = GameMessage.types[elements[0]] || GameMessage.types[0];
           result.state = (elements.length > 1 && elements[1] ? elements[1] : null);
@@ -69,7 +70,8 @@ define('Messages', [], function() {
           if (!elements || elements.length < 2) return null;
           // Remove the lobby message type from the front
           elements.shift();
-  
+      
+          result.type = "lobby";
           result.operation = elements[0];
           result.operationName = LobbyMessage.types[elements[0]] || LobbyMessage.types[0];
           result.state = (elements.length > 1 && elements[1] ? elements[1] : null);
