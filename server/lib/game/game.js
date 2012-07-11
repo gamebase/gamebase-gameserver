@@ -1,11 +1,12 @@
 var events = require('events'),
     util = require('util');
 
-function Game(config) {
+function Game(config, creator) {
     config = config || {};
     this.name = config.gameName || 'Unknown game';
     this.maxPlayers = config.maxPlayers || 6;
     this.clients = [];
+    this.creator = creator;
 }
 util.inherits(Game, events.EventEmitter);
 

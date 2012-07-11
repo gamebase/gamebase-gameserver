@@ -117,7 +117,7 @@ GameServer.prototype.onNewGame = function(client, message) {
         // Send the failure
         this._sendToClient(client, GameMessage.format(message.operation, 0, {error: 'Game already exists'}));
     } else {
-        var game = new Game(message.data);
+        var game = new Game(message.data, client);
         this.games[name] = game;
         // Send the ok
         this._sendToClient(client, GameMessage.format(message.operation, 1));

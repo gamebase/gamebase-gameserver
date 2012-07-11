@@ -5,7 +5,8 @@ LobbyMessage = {
     types: {
         0: 'Unknown',
         1: 'ListGames',
-        10: 'NewGame'
+        10: 'NewGame',
+        11: 'RemoveGame'
     },
     
     /**
