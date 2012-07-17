@@ -1,5 +1,3 @@
-
-// req: 
 GameMessage = {
     messageId: 1,
     
