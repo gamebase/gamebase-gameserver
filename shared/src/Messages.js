@@ -1,14 +1,15 @@
 //= game/gamemessage.js
 //= lobby/lobbymessage.js
 
-Messages = {
-    GameMessage: GameMessage,
-    LobbyMessage: LobbyMessage
-};
-
 MessageParser = {
+    
+    split: function(message) {
+        if (!message) return null;
+        return message.split("|"); 
+    },
+    
     parse: function(message) {
-        var elements = message.split("|"),
+        var elements = MessageParser.split(message),
             messageType;
 
         if (elements.length > 0) {
@@ -22,3 +23,9 @@ MessageParser = {
        return null;
     }
 }
+
+Messages = {
+    GameMessage: GameMessage,
+    LobbyMessage: LobbyMessage,
+    Parser: MessageParser
+};

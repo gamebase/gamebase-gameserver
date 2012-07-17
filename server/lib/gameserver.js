@@ -5,12 +5,14 @@ var _ = require('underscore'),
     util = require('util'),
     WebSocketServer = require('ws').Server,
     Game = require('./game/game'),
-    messages = require('../../shared/pkg/cjs/Messages'),
+    GameClient = require('./client/client'),
+    messages = require('../../shared/dist/commonjs/Messages'),
+    messageParser = messages.Parser,
     LobbyMessage = messages.LobbyMessage,
     GameMessage = messages.GameMessage,
     messageHandlers = {
-        '0': 'onLobbyMessage',
-        '1': 'onGameMessage'
+        lobby: 'onLobbyMessage',
+        game: 'onGameMessage'
     };
 
 
@@ -54,10 +56,7 @@ GameServer.prototype.createClientId = function() {
  **/
 GameServer.prototype.onConnect = function(ws) {
     var id = this.createClientId(),
-        client = {
-            id: id,
-            ws: ws
-        },
+        client = new GameClient(id, ws),
         server = this;
     this.clients[id] = client;
     
@@ -78,33 +77,47 @@ GameServer.prototype.onConnect = function(ws) {
 /**
   Handle the game server receiving a message
  **/
-GameServer.prototype.onMessage = function(client, message) {    
+GameServer.prototype.onMessage = function(client, payload) {    
     
-    for (var mType in messageHandlers) {
-        if (message.indexOf(mType) === 0 && this[messageHandlers[mType]]) {
-            this[messageHandlers[mType]](client, message);
+    var message = messageParser.parse(payload),
+        handler;
+    
+    if (message && message.type) {        
+        handler = this[messageHandlers[message.type]];
+        if (handler) {
+            handler.call(this, client, message);
             return;
-        }
+        }    
     }
-    
+        
     this.emit('unhandledMessage', client, message);
 }
 
 /**
   Handles a lobby message
  **/
-GameServer.prototype.onLobbyMessage = function(client, message) {
+GameServer.prototype.onLobbyMessage = function(client, msg) {
     
-    var msg = LobbyMessage.parse(message),
-        handler;
-    if (!msg) return;
+    if (!msg || !msg.operationName) return;
     
-    handler = 'on' + msg.operationName;
+    var handler = 'on' + msg.operationName;
     if (this[handler]) {
         this[handler](client, msg);
     } else {
         this.emit('lobbyMessage', client, message);
     }
+}
+
+/**
+  Handles a game messsage
+ **/
+GameServer.prototype.onGameMessage = function(client, message) {
+    if (!message || !message.gameId) return;    
+    var game = this.games[message.gameId];    
+    if (game) {
+        game.onMessage(client, message);
+    }
+    
 }
 
 /**
@@ -120,7 +133,7 @@ GameServer.prototype.onNewGame = function(client, message) {
         var game = new Game(message.data, client);
         this.games[name] = game;
         // Send the ok
-        this._sendToClient(client, GameMessage.format(message.operation, 1));
+        client.sendMessage(GameMessage.format(message.operation, 1));
         this.emit('gameCreated', game);
     }    
 }
@@ -151,8 +164,8 @@ GameServer.prototype.onListGames = function(client, message) {
     var gameList = _.map(this.games, function(value, key) {
         return {name: key, currentPlayers: value.currentPlayerCount(), maxPlayers: value.maxPlayers};
     });
-    
-    this._sendToClient(client, LobbyMessage.format(message.operation, 1, {games: gameList}));
+
+    client.sendMessage(LobbyMessage.format(message.operation, 1, {games: gameList}));
 }
 
 /**
@@ -164,16 +177,8 @@ GameServer.prototype._send = function(message) {
         options = null;
     for (clientId in this.clients) {
         client = this.clients[clientId];
-        this._sendToClient(client, bMessage, options);
+        client.sendMessage(bMessage, options);
     }
-}
-
-/**
-  Sends a message to a single client
- **/
-GameServer.prototype._sendToClient = function(client, message, options, callback) {
-    if (!client || !client.ws) return;
-    client.ws.send(message, options, callback);
 }
 
 module.exports = GameServer;

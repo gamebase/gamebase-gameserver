@@ -1,3 +1,6 @@
+
+
+
 GameMessage = {
     messageId: 1,
     
@@ -35,8 +38,9 @@ GameMessage = {
         result.type = "game";
         result.operation = elements[0];
         result.operationName = GameMessage.types[elements[0]] || GameMessage.types[0];
-        result.state = (elements.length > 1 && elements[1] ? elements[1] : null);
-        result.data = (elements.length > 2 && elements[2] ? JSON.parse(elements[2]) : null);
+        result.gameId = elements[1];
+        result.state = element[2];
+        result.data = (elements.length > 3 && elements[3] ? JSON.parse(elements[3]) : null);
         return result;
     }
 };
@@ -85,8 +89,14 @@ Messages = {
 };
 
 MessageParser = {
+    
+    split: function(message) {
+        if (!message) return null;
+        return message.split("|"); 
+    },
+    
     parse: function(message) {
-        var elements = message.split("|"),
+        var elements = MessageParser.split(message),
             messageType;
 
         if (elements.length > 0) {
@@ -99,4 +109,8 @@ MessageParser = {
        }
        return null;
     }
+}
+
+if (typeof Messages != 'undefined') {
+    module.exports = Messages;
 }

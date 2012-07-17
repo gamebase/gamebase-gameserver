@@ -1,7 +1,7 @@
 var expect = require('chai').expect,
     WebSocket = require('ws'),
     GameServer = require('../lib/gameserver'),
-    LobbyMessage = require('../../shared/pkg/cjs/Messages').LobbyMessage,
+    LobbyMessage = require('../../shared/dist/commonjs/Messages').LobbyMessage,
     server;
     
     
@@ -35,8 +35,13 @@ describe('LobbyServer tests', function() {
                     ws.send(LobbyMessage.format(1));
                 } else if (msg.operationName === 'ListGames') {
                     expect(msg.data.games[0].name).to.equal('Test Game');
-                    done();                    
+                    
+                    ws.send(GameMessage.format('Test Game', 11));
+                    messageNum++;
                 }
+            } else if (messageNum === 3) {
+                console.log(message);
+                done();
             }
                         
         });

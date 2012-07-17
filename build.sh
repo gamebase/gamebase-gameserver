@@ -1,0 +1,1 @@
+interleave build shared/src/Messages.js --output shared/dist --wrap 

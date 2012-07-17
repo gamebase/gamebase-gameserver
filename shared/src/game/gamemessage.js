@@ -33,10 +33,11 @@ GameMessage = {
         elements.shift();
 
         result.type = "game";
-        result.operation = elements[0];
-        result.operationName = GameMessage.types[elements[0]] || GameMessage.types[0];
-        result.state = (elements.length > 1 && elements[1] ? elements[1] : null);
-        result.data = (elements.length > 2 && elements[2] ? JSON.parse(elements[2]) : null);
+        result.gameId = elements[0];
+        result.operation = elements[1];
+        result.operationName = GameMessage.types[elements[1]] || GameMessage.types[0];
+        result.state = elements[2];
+        result.data = (elements.length > 3 && elements[3] ? JSON.parse(elements[3]) : null);
         return result;
     }
 };
